@@ -1,37 +1,36 @@
-import mysql.connector
+import sys
 import urllib.request
-# URL segement to fetch data from
-url_base = "https://serval.uvm.edu/~rgweb/batch/enrollment/curr_enroll_"
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+def parse_args():
+    """
+    Parse CLI options
+    """
+    return {
+        'start': int(sys.argv[1]),
+        'end': int(sys.argv[2]),
+    }
+
 
 def main():
-    scrape_data()
-    db_connect()
+    args = parse_args()
+    scrape_data(args)
 
 
-def scrape_data():
-    for i in range(1995, 2021):
-       for j in [1, 6, 9]:
-           url_end = str(i) + "0" + str(j) + ".txt"
+def scrape_data(args):
+    # URL segment to fetch data from
+    url_base = 'https://serval.uvm.edu/~rgweb/batch/enrollment/curr_enroll_'
+    for year in range(args['start'], args['end'] + 1):
+       for session in ['01', '06', '09']:
+           url_end = str(year) + session + '.txt'
            url = url_base + url_end
-           f = open("../data/" + url_end, 'w')
+           f = open('../data/' + url_end, 'w')
            response = urllib.request.urlopen(url)
            for line in response:
                f.write(line.decode('utf-8'))
            f.close()
 
 
-def db_connect():
-    mydb = mysql.connector.connect(
-    	host="webdb.uvm.edu",
-    	user="oreckord_reader",
-    	password="hfDC3mIJGXkG"
-    )
-    print(mydb)
-    cursor = mydb.cursor()
-    cursor.execute("SHOW DATABASES")
-    for x in cursor:
-    	print(x)
-
-
-if __name__== "__main__":
+if __name__ == '__main__':
   main()
