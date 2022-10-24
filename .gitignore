@@ -1,3 +1,4 @@
 .idea/
 venv/
-data/
+raw-data/
+clean-data/
