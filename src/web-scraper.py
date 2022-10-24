@@ -1,4 +1,4 @@
-import sys
+import argparse
 from urllib.error import HTTPError
 import urllib.request
 import ssl
@@ -8,10 +8,15 @@ def parse_args():
     """
     Parse CLI options
     """
-    return {
-        'start': int(sys.argv[1]),
-        'end': int(sys.argv[2]),
-    }
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-y',
+        '--years',
+        type=int,
+        nargs='+',
+        required=True,
+    )
+    return parser.parse_args()
 
 
 def main():
@@ -22,7 +27,7 @@ def main():
 def scrape_data(args):
     # URL segment to fetch data from
     url_base = 'https://serval.uvm.edu/~rgweb/batch/enrollment/curr_enroll_'
-    for year in range(args['start'], args['end'] + 1):
+    for year in range(args.years[0], args.years[1] + 1):
         for session in ['01', '06', '09']:
             date = str(year) + session + '.csv'
             url = url_base + date
